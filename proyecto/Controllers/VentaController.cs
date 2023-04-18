@@ -37,7 +37,8 @@ namespace proyecto.Controllers
                     Codigo = p.Codigo,
                     IdMarca = p.IdMarca,
                     Descripcion = p.Descripcion,
-                    Precio = p.Precio
+                    Precio = p.Precio,
+                    Stock = p.Stock
                 }).ToListAsync();
 
 
@@ -49,9 +50,35 @@ namespace proyecto.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Clientes/{busqueda}")]
+        public async Task<IActionResult> Clientes(string busqueda)
+        {
+            List<DtoCliente> lista = new List<DtoCliente>();
+            try
+            {
+                lista = await _dbContext.Cliente
+                .Where(p => string.Concat(p.Cedula, p.Nombres.ToLower(), p.Apellidos.ToLower()).Contains(busqueda.ToLower()))
+                .Select(p => new DtoCliente()
+                {
+                    IdCliente = p.IdCliente,
+                    Cedula = p.Cedula,
+                    Nombres = p.Nombres,
+                    Apellidos = p.Apellidos
+                }).ToListAsync();
+
+                return StatusCode(StatusCodes.Status200OK, lista);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+            }
+        }
+
         [HttpPost]
         [Route("Registrar")]
-        public IActionResult Registrar([FromBody] DtoVenta request) {
+        public IActionResult Registrar([FromBody] DtoVenta request)
+        {
             try
             {
                 string numeroDocumento = "";
@@ -72,10 +99,9 @@ namespace proyecto.Controllers
                     con.Open();
                     SqlCommand cmd = new SqlCommand("sp_RegistrarVenta", con);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("documentoCliente", SqlDbType.VarChar, 40).Value = request.documentoCliente;
-                    cmd.Parameters.Add("nombreCliente", SqlDbType.VarChar, 40).Value = request.nombreCliente;
                     cmd.Parameters.Add("tipoDocumento", SqlDbType.VarChar, 50).Value = request.tipoDocumento;
                     cmd.Parameters.Add("idUsuario", SqlDbType.Int).Value = request.idUsuario;
+                    cmd.Parameters.Add("idCliente", SqlDbType.Int).Value = request.IdCliente;
                     cmd.Parameters.Add("subTotal", SqlDbType.Decimal).Value = request.subTotal;
                     cmd.Parameters.Add("impuestoTotal", SqlDbType.Decimal).Value = request.igv;
                     cmd.Parameters.Add("total", SqlDbType.Decimal).Value = request.total;
@@ -87,12 +113,11 @@ namespace proyecto.Controllers
 
                 return StatusCode(StatusCodes.Status200OK, new { numeroDocumento = numeroDocumento });
             }
-            catch (Exception ex) {
-
+            catch (Exception ex)
+            {
                 var str = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, new { numeroDocumento = "" });
             }
-
         }
 
         [HttpGet]
@@ -113,6 +138,7 @@ namespace proyecto.Controllers
                 {
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
+                        .Include(c=>c.Cliente)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
@@ -120,9 +146,9 @@ namespace proyecto.Controllers
                             FechaRegistro =  v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
-                            DocumentoCliente = v.DocumentoCliente,
-                            NombreCliente = v.NombreCliente,
                             UsuarioRegistro = v.IdUsuarioNavigation.Nombre,
+                            NombreCliente = v.Cliente.Nombres + " " + v.Cliente.Apellidos,
+                            DocumentoCliente = v.Cliente.Cedula,
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
                             Total = v.Total.ToString(),
@@ -147,8 +173,8 @@ namespace proyecto.Controllers
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
-                            DocumentoCliente = v.DocumentoCliente,
-                            NombreCliente = v.NombreCliente,
+                            //DocumentoCliente = v.DocumentoCliente,
+                            //NombreCliente = v.NombreCliente,
                             UsuarioRegistro = v.IdUsuarioNavigation.Nombre,
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
@@ -170,8 +196,6 @@ namespace proyecto.Controllers
                 var str = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, lista_venta);
             }
-            
-
         }
 
         [HttpGet]
@@ -190,22 +214,23 @@ namespace proyecto.Controllers
                 lista_venta = (from v in _dbContext.Venta
                                join d in _dbContext.DetalleVenta on v.IdVenta equals d.IdVenta
                                join p in _dbContext.Productos on d.IdProducto equals p.IdProducto
+                               join c in _dbContext.Cliente on v.IdCliente equals c.IdCliente
                                where v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date
                                select new DtoReporteVenta()
-                                 {
-                                     FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
-                                     NumeroDocumento = v.NumeroDocumento,
-                                     TipoDocumento = v.TipoDocumento,
-                                     DocumentoCliente = v.DocumentoCliente,
-                                     NombreCliente = v.NombreCliente,
-                                     SubTotalVenta = v.SubTotal.ToString(),
-                                     ImpuestoTotalVenta = v.ImpuestoTotal.ToString(),
-                                     TotalVenta = v.Total.ToString(),
-                                     Producto = p.Descripcion,
-                                     Cantidad = d.Cantidad.ToString(),
-                                     Precio = d.Precio.ToString(),
-                                     Total = d.Total.ToString()
-                                 }).ToList();
+                               {
+                                   FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
+                                   NumeroDocumento = v.NumeroDocumento,
+                                   TipoDocumento = v.TipoDocumento,
+                                   DocumentoCliente = c.Cedula,
+                                   NombreCliente = $"{c.Nombres} {c.Apellidos}",//c.Nombres + ""
+                                   SubTotalVenta = v.SubTotal.ToString(),
+                                   ImpuestoTotalVenta = v.ImpuestoTotal.ToString(),
+                                   TotalVenta = v.Total.ToString(),
+                                   Producto = p.Descripcion,
+                                   Cantidad = d.Cantidad.ToString(),
+                                   Precio = d.Precio.ToString(),
+                                   Total = d.Total.ToString()
+                               }).ToList();
 
 
 

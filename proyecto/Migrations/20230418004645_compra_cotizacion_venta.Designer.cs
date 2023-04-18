@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230418004645_compra_cotizacion_venta")]
+    partial class compra_cotizacion_venta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,6 +99,9 @@ namespace proyecto.Migrations
                     b.Property<DateTime?>("FechaRegistro")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("IdCliente")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdProveedor")
                         .HasColumnType("int");
 
@@ -121,7 +126,7 @@ namespace proyecto.Migrations
 
                     b.HasKey("IdCompra");
 
-                    b.HasIndex("IdProveedor");
+                    b.HasIndex("IdCliente");
 
                     b.HasIndex("IdUsuario");
 
@@ -534,9 +539,7 @@ namespace proyecto.Migrations
                 {
                     b.HasOne("proyecto.Models.Proveedor", "Proveedor")
                         .WithMany()
-                        .HasForeignKey("IdProveedor")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdCliente");
 
                     b.HasOne("proyecto.Models.Usuario", "Usuario")
                         .WithMany()

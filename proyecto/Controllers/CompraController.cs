@@ -37,7 +37,8 @@ namespace proyecto.Controllers
                     Codigo = p.Codigo,
                     IdMarca = p.IdMarca,
                     Descripcion = p.Descripcion,
-                    Precio = p.Precio
+                    Precio = p.Precio,
+                    Stock = p.Stock
                 }).ToListAsync();
 
 
@@ -49,9 +50,35 @@ namespace proyecto.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Proveedor/{busqueda}")]
+        public async Task<IActionResult> Clientes(string busqueda)
+        {
+            List<DtoProveedor> lista = new List<DtoProveedor>();
+            try
+            {
+                lista = await _dbContext.Proveedor
+                .Where(p => string.Concat(p.Ruc_Cedula, p.NombreProveedor.ToLower(), p.Direccion.ToLower()).Contains(busqueda.ToLower()))
+                .Select(p => new DtoProveedor()
+                {
+                    IdProveedor = p.IdProveedor,
+                    NombreProveedor = p.NombreProveedor,
+                    Ruc_Cedula = p.Ruc_Cedula,
+                    Direccion = p.Direccion,
+                    Telefono = p.Telefono
+                }).ToListAsync();
+
+                return StatusCode(StatusCodes.Status200OK, lista);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+            }
+        }
+
         [HttpPost]
         [Route("Registrar")]
-        public IActionResult Registrar([FromBody] DtoCotizacion request)
+        public IActionResult Registrar([FromBody] DtoCompra request)
         {
             try
             {
@@ -73,10 +100,9 @@ namespace proyecto.Controllers
                     con.Open();
                     SqlCommand cmd = new SqlCommand("sp_RegistrarCompra", con);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("documentoCliente", SqlDbType.VarChar, 40).Value = request.DocumentoCliente;
-                    cmd.Parameters.Add("nombreCliente", SqlDbType.VarChar, 40).Value = request.NombreCliente;
                     cmd.Parameters.Add("tipoDocumento", SqlDbType.VarChar, 50).Value = request.TipoDocumento;
                     cmd.Parameters.Add("idUsuario", SqlDbType.Int).Value = request.IdUsuario;
+                    cmd.Parameters.Add("idProveedor", SqlDbType.Int).Value = request.IdProveedor;
                     cmd.Parameters.Add("subTotal", SqlDbType.Decimal).Value = request.SubTotal;
                     cmd.Parameters.Add("impuestoTotal", SqlDbType.Decimal).Value = request.Igv;
                     cmd.Parameters.Add("total", SqlDbType.Decimal).Value = request.Total;
@@ -90,11 +116,9 @@ namespace proyecto.Controllers
             }
             catch (Exception ex)
             {
-
                 var str = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, new { numeroDocumento = "" });
             }
-
         }
 
         [HttpGet]
@@ -102,24 +126,25 @@ namespace proyecto.Controllers
         public async Task<IActionResult> Listar()
         {
             string buscarPor = HttpContext.Request.Query["buscarPor"];
-            string numeroCotizacion = HttpContext.Request.Query["numeroCotizacion"];
+            string numeroCompra = HttpContext.Request.Query["numeroCompra"];
             string fechaInicio = HttpContext.Request.Query["fechaInicio"];
             string fechaFin = HttpContext.Request.Query["fechaFin"];
 
             DateTime _fechainicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", CultureInfo.CreateSpecificCulture("es-PE"));
             DateTime _fechafin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", CultureInfo.CreateSpecificCulture("es-PE"));
 
-            List<DtoHistorialCotizacion> lista_Cotizacion = new List<DtoHistorialCotizacion>();
+            List<DtoHistorialCompra> lista_Compra = new List<DtoHistorialCompra>();
             try
             {
                 if (buscarPor == "fecha")
                 {
-                    lista_Cotizacion = await _dbContext.Cotizacion
+                    lista_Compra = await _dbContext.Compra
                         .Include(u => u.Usuario)
-                        .Include(d => d.DetalleCotizacion)
+                        .Include(d => d.DetalleCompra)
+                        //.Include(cl => cl.Cliente)
                         .ThenInclude(p => p.Producto)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
-                        .Select(v => new DtoHistorialCotizacion()
+                        .Select(v => new DtoHistorialCompra()
                         {
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             TipoDocumento = v.TipoDocumento,
@@ -127,7 +152,7 @@ namespace proyecto.Controllers
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
                             Total = v.Total.ToString(),
-                            Detalle = v.DetalleCotizacion.Select(d => new DtoDetalleCotizacion()
+                            Detalle = v.DetalleCompra.Select(d => new DtoDetalleCompra()
                             {
                                 Producto = d.Producto.Descripcion,
                                 Cantidad = d.Cantidad.ToString(),
@@ -139,12 +164,12 @@ namespace proyecto.Controllers
                 }
                 else
                 {
-                    lista_Cotizacion = await _dbContext.Cotizacion
+                    lista_Compra = await _dbContext.Compra
                         .Include(u => u.Usuario)
-                        .Include(d => d.DetalleCotizacion)
+                        .Include(d => d.DetalleCompra)
                         .ThenInclude(p => p.Producto)
-                        //.Where(v => v.NumeroDocumento == numeroCotizacion)
-                        .Select(v => new DtoHistorialCotizacion()
+                        //.Where(v => v.NumeroDocumento == numeroCompra)
+                        .Select(v => new DtoHistorialCompra()
                         {
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             //NumeroDocumento = v.NumeroDocumento,
@@ -155,7 +180,7 @@ namespace proyecto.Controllers
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
                             Total = v.Total.ToString(),
-                            Detalle = v.DetalleCotizacion.Select(d => new DtoDetalleCotizacion()
+                            Detalle = v.DetalleCompra.Select(d => new DtoDetalleCompra()
                             {
                                 Producto = d.Producto.Descripcion,
                                 Cantidad = d.Cantidad.ToString(),
@@ -166,12 +191,12 @@ namespace proyecto.Controllers
                 }
 
 
-                return StatusCode(StatusCodes.Status200OK, lista_Cotizacion);
+                return StatusCode(StatusCodes.Status200OK, lista_Compra);
             }
             catch (Exception ex)
             {
                 var str = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, lista_Cotizacion);
+                return StatusCode(StatusCodes.Status500InternalServerError, lista_Compra);
             }
         }
 
@@ -185,23 +210,23 @@ namespace proyecto.Controllers
             DateTime _fechainicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", CultureInfo.CreateSpecificCulture("es-PE"));
             DateTime _fechafin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", CultureInfo.CreateSpecificCulture("es-PE"));
 
-            List<DtoReporteCotizacion> lista_Cotizacion = new List<DtoReporteCotizacion>();
+            List<DtoReporteCompra> lista_Compra = new List<DtoReporteCompra>();
             try
             {
-                lista_Cotizacion = (from v in _dbContext.Cotizacion
-                                    join d in _dbContext.DetalleCotizacion on v.IdCotizacion equals d.IdCotizacion
+                lista_Compra = (from v in _dbContext.Compra
+                                    join d in _dbContext.DetalleCompras on v.IdCompra equals d.IdCompra
                                     join p in _dbContext.Productos on d.IdProducto equals p.IdProducto
                                     where v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date
-                                    select new DtoReporteCotizacion()
+                                    select new DtoReporteCompra()
                                     {
                                         FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                                         //NumeroDocumento = v.NumeroDocumento,
                                         TipoDocumento = v.TipoDocumento,
                                         //DocumentoCliente = v.DocumentoCliente,
                                         //NombreCliente = v.NombreCliente,
-                                        SubTotalCotizacion = v.SubTotal.ToString(),
-                                        ImpuestoTotalCotizacion = v.ImpuestoTotal.ToString(),
-                                        TotalCotizacion = v.Total.ToString(),
+                                        SubTotalCompra = v.SubTotal.ToString(),
+                                        ImpuestoTotalCompra = v.ImpuestoTotal.ToString(),
+                                        TotalCompra = v.Total.ToString(),
                                         Producto = p.Descripcion,
                                         Cantidad = d.Cantidad.ToString(),
                                         Precio = d.Precio.ToString(),
@@ -210,12 +235,12 @@ namespace proyecto.Controllers
 
 
 
-                return StatusCode(StatusCodes.Status200OK, lista_Cotizacion);
+                return StatusCode(StatusCodes.Status200OK, lista_Compra);
             }
             catch (Exception ex)
             {
                 var str = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, lista_Cotizacion);
+                return StatusCode(StatusCodes.Status500InternalServerError, lista_Compra);
             }
         }
     }

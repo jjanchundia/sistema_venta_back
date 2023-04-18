@@ -221,10 +221,10 @@ namespace proyecto.Models
 
                 entity.Property(e => e.IdVenta).HasColumnName("idVenta");
 
-                entity.Property(e => e.DocumentoCliente)
-                    .HasMaxLength(40)
-                    .IsUnicode(false)
-                    .HasColumnName("documentoCliente");
+                //entity.Property(e => e.DocumentoCliente)
+                //    .HasMaxLength(40)
+                //    .IsUnicode(false)
+                //    .HasColumnName("documentoCliente");
 
                 entity.Property(e => e.FechaRegistro)
                     .HasColumnType("datetime")
@@ -237,10 +237,10 @@ namespace proyecto.Models
                     .HasColumnType("decimal(10, 2)")
                     .HasColumnName("impuestoTotal");
 
-                entity.Property(e => e.NombreCliente)
-                    .HasMaxLength(40)
-                    .IsUnicode(false)
-                    .HasColumnName("nombreCliente");
+                //entity.Property(e => e.NombreCliente)
+                //    .HasMaxLength(40)
+                //    .IsUnicode(false)
+                //    .HasColumnName("nombreCliente");
 
                 entity.Property(e => e.NumeroDocumento)
                     .HasMaxLength(40)

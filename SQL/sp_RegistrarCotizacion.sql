@@ -1,5 +1,5 @@
 
-create procedure sp_RegistrarCotizacion(
+create or alter procedure sp_RegistrarCotizacion(
 @tipoDocumento varchar(50),
 @idUsuario int,
 @idCliente int,

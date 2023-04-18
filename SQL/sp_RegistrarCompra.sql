@@ -1,8 +1,8 @@
 
-create procedure sp_RegistrarCompra(
+create or alter procedure sp_RegistrarCompra(
 @tipoDocumento varchar(50),
 @idUsuario int,
-@idCliente int,
+@idProveedor int,
 @subTotal decimal(10,2),
 @impuestoTotal decimal(10,2),
 @total decimal(10,2),
@@ -38,8 +38,8 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into Compra(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdCliente,subTotal,impuestoTotal,total) 
-			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idCliente,@subTotal,@impuestoTotal,@total)
+			insert into Compra(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdProveedor,subTotal,impuestoTotal,total) 
+			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idProveedor,@subTotal,@impuestoTotal,@total)
 
 
 			set @idCompra = SCOPE_IDENTITY()

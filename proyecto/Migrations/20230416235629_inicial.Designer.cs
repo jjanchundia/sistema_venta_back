@@ -12,8 +12,8 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    [Migration("20230413221620_inicial1")]
-    partial class inicial1
+    [Migration("20230416235629_inicial")]
+    partial class inicial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -133,7 +133,10 @@ namespace proyecto.Migrations
             modelBuilder.Entity("proyecto.Models.Cotizacion", b =>
                 {
                     b.Property<int>("IdCotizacion")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCotizacion"), 1L, 1);
 
                     b.Property<DateTime?>("FechaRegistro")
                         .HasColumnType("datetime2");
@@ -160,6 +163,8 @@ namespace proyecto.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdCotizacion");
+
+                    b.HasIndex("IdCliente");
 
                     b.HasIndex("IdUsuario");
 
@@ -559,7 +564,7 @@ namespace proyecto.Migrations
                 {
                     b.HasOne("proyecto.Models.Cliente", "Cliente")
                         .WithMany()
-                        .HasForeignKey("IdCotizacion")
+                        .HasForeignKey("IdCliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

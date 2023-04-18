@@ -157,6 +157,7 @@ namespace proyecto.Migrations
                 {
                     IdCompra = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    NumeroDocumento = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TipoDocumento = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IdUsuario = table.Column<int>(type: "int", nullable: true),
@@ -185,7 +186,9 @@ namespace proyecto.Migrations
                 name: "Cotizacion",
                 columns: table => new
                 {
-                    IdCotizacion = table.Column<int>(type: "int", nullable: false),
+                    IdCotizacion = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NumeroDocumento = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TipoDocumento = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IdUsuario = table.Column<int>(type: "int", nullable: true),
@@ -198,8 +201,8 @@ namespace proyecto.Migrations
                 {
                     table.PrimaryKey("PK_Cotizacion", x => x.IdCotizacion);
                     table.ForeignKey(
-                        name: "FK_Cotizacion_Cliente_IdCotizacion",
-                        column: x => x.IdCotizacion,
+                        name: "FK_Cotizacion_Cliente_IdCliente",
+                        column: x => x.IdCliente,
                         principalTable: "Cliente",
                         principalColumn: "IdCliente",
                         onDelete: ReferentialAction.Cascade);
@@ -326,6 +329,11 @@ namespace proyecto.Migrations
                 name: "IX_Compra_IdUsuario",
                 table: "Compra",
                 column: "IdUsuario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cotizacion_IdCliente",
+                table: "Cotizacion",
+                column: "IdCliente");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cotizacion_IdUsuario",

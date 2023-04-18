@@ -19,7 +19,7 @@ namespace proyecto.Models
         public decimal? Total { get; set; }
         [ForeignKey("IdUsuario")]
         public virtual Usuario? Usuario { get; set; }
-        [ForeignKey("IdCotizacion")]
+        [ForeignKey("IdCliente")]
         public virtual Cliente? Cliente { get; set; }
         //[ForeignKey("IdDetalleCotizacion")]
         public virtual ICollection<DetalleCotizacion>? DetalleCotizacion { get; set; }

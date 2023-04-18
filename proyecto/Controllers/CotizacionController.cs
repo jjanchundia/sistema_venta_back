@@ -37,7 +37,8 @@ namespace proyecto.Controllers
                     Codigo = p.Codigo,
                     IdMarca = p.IdMarca,
                     Descripcion = p.Descripcion,
-                    Precio = p.Precio
+                    Precio = p.Precio,
+                    Stock = p.Stock
                 }).ToListAsync();
 
 

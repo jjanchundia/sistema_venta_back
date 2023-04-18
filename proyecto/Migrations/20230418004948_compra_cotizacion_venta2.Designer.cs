@@ -12,8 +12,8 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    [Migration("20230413220737_inicial")]
-    partial class inicial
+    [Migration("20230418004948_compra_cotizacion_venta2")]
+    partial class compra_cotizacion_venta2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -99,7 +99,7 @@ namespace proyecto.Migrations
                     b.Property<DateTime?>("FechaRegistro")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdCliente")
+                    b.Property<int>("IdProveedor")
                         .HasColumnType("int");
 
                     b.Property<int?>("IdUsuario")
@@ -107,6 +107,9 @@ namespace proyecto.Migrations
 
                     b.Property<decimal?>("ImpuestoTotal")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("NumeroDocumento")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("SubTotal")
                         .HasColumnType("decimal(18,2)");
@@ -120,7 +123,7 @@ namespace proyecto.Migrations
 
                     b.HasKey("IdCompra");
 
-                    b.HasIndex("IdCliente");
+                    b.HasIndex("IdProveedor");
 
                     b.HasIndex("IdUsuario");
 
@@ -130,7 +133,10 @@ namespace proyecto.Migrations
             modelBuilder.Entity("proyecto.Models.Cotizacion", b =>
                 {
                     b.Property<int>("IdCotizacion")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCotizacion"), 1L, 1);
 
                     b.Property<DateTime?>("FechaRegistro")
                         .HasColumnType("datetime2");
@@ -144,6 +150,9 @@ namespace proyecto.Migrations
                     b.Property<decimal?>("ImpuestoTotal")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("NumeroDocumento")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal?>("SubTotal")
                         .HasColumnType("decimal(18,2)");
 
@@ -154,6 +163,8 @@ namespace proyecto.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdCotizacion");
+
+                    b.HasIndex("IdCliente");
 
                     b.HasIndex("IdUsuario");
 
@@ -372,10 +383,6 @@ namespace proyecto.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RazonSocial")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Ruc_Cedula")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -478,17 +485,14 @@ namespace proyecto.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdVenta"), 1L, 1);
 
-                    b.Property<string>("DocumentoCliente")
-                        .HasMaxLength(40)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(40)")
-                        .HasColumnName("documentoCliente");
-
                     b.Property<DateTime?>("FechaRegistro")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasColumnName("fechaRegistro")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int");
 
                     b.Property<int?>("IdUsuario")
                         .HasColumnType("int")
@@ -497,12 +501,6 @@ namespace proyecto.Migrations
                     b.Property<decimal?>("ImpuestoTotal")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("impuestoTotal");
-
-                    b.Property<string>("NombreCliente")
-                        .HasMaxLength(40)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(40)")
-                        .HasColumnName("nombreCliente");
 
                     b.Property<string>("NumeroDocumento")
                         .HasMaxLength(40)
@@ -527,6 +525,8 @@ namespace proyecto.Migrations
                     b.HasKey("IdVenta")
                         .HasName("PK__Venta__077D5614D2880592");
 
+                    b.HasIndex("IdCliente");
+
                     b.HasIndex("IdUsuario");
 
                     b.ToTable("Venta");
@@ -534,9 +534,9 @@ namespace proyecto.Migrations
 
             modelBuilder.Entity("proyecto.Models.Compra", b =>
                 {
-                    b.HasOne("proyecto.Models.Cliente", "Cliente")
+                    b.HasOne("proyecto.Models.Proveedor", "Proveedor")
                         .WithMany()
-                        .HasForeignKey("IdCliente")
+                        .HasForeignKey("IdProveedor")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -544,7 +544,7 @@ namespace proyecto.Migrations
                         .WithMany()
                         .HasForeignKey("IdUsuario");
 
-                    b.Navigation("Cliente");
+                    b.Navigation("Proveedor");
 
                     b.Navigation("Usuario");
                 });
@@ -553,7 +553,7 @@ namespace proyecto.Migrations
                 {
                     b.HasOne("proyecto.Models.Cliente", "Cliente")
                         .WithMany()
-                        .HasForeignKey("IdCotizacion")
+                        .HasForeignKey("IdCliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -641,10 +641,18 @@ namespace proyecto.Migrations
 
             modelBuilder.Entity("proyecto.Models.Venta", b =>
                 {
+                    b.HasOne("proyecto.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("proyecto.Models.Usuario", "IdUsuarioNavigation")
                         .WithMany("Venta")
                         .HasForeignKey("IdUsuario")
                         .HasConstraintName("FK__Venta__idUsuario__5CD6CB2B");
+
+                    b.Navigation("Cliente");
 
                     b.Navigation("IdUsuarioNavigation");
                 });
