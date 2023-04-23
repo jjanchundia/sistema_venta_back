@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230422014605_ventaCredito")]
+    partial class ventaCredito
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,27 +340,6 @@ namespace proyecto.Migrations
                     b.ToTable("NumeroDocumento", (string)null);
                 });
 
-            modelBuilder.Entity("proyecto.Models.Pago", b =>
-                {
-                    b.Property<int>("IdPago")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPago"), 1L, 1);
-
-                    b.Property<int>("IdVenta")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SaldoPendiente")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("IdPago");
-
-                    b.HasIndex("IdVenta");
-
-                    b.ToTable("Pago");
-                });
-
             modelBuilder.Entity("proyecto.Models.Producto", b =>
                 {
                     b.Property<int>("IdProducto")
@@ -600,6 +581,12 @@ namespace proyecto.Migrations
                     b.Property<decimal>("CuotaMensual")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("Descuento")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("FechaPago")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("FechaRegistro")
                         .HasColumnType("datetime2");
 
@@ -727,17 +714,6 @@ namespace proyecto.Migrations
                     b.Navigation("Producto");
 
                     b.Navigation("VentaCredito");
-                });
-
-            modelBuilder.Entity("proyecto.Models.Pago", b =>
-                {
-                    b.HasOne("proyecto.Models.Venta", "Venta")
-                        .WithMany()
-                        .HasForeignKey("IdVenta")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Venta");
                 });
 
             modelBuilder.Entity("proyecto.Models.Producto", b =>

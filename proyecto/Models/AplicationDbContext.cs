@@ -30,7 +30,9 @@ namespace proyecto.Models
         public virtual DbSet<Cliente> Cliente { get; set; } = null!;
         public virtual DbSet<Compra> Compra { get; set; } = null!;
         public virtual DbSet<DetalleCompra> DetalleCompras { get; set; } = null!;
-
+        public virtual DbSet<VentaCredito> VentaCredito { get; set; } = null!;
+        public virtual DbSet<DetalleVentaCredito> DetalleVentaCredito { get; set; } = null!;
+        public virtual DbSet<Pago> Pago { get; set; } = null!;
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 

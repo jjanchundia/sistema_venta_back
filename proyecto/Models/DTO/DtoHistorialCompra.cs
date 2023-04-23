@@ -6,8 +6,8 @@ namespace proyecto.Models.DTO
         public string? FechaRegistro { get; set; }
         public string? NumeroDocumento { get; set; }
         public string? TipoDocumento { get; set; }
-        public string? DocumentoCliente { get; set; }
-        public string? NombreCliente { get; set; }
+        public string? DocumentoProveedor { get; set; }
+        public string? NombreProveedor { get; set; }
         public string? UsuarioRegistro { get; set; }
         public string? SubTotal { get; set; }
         public string? Impuesto { get; set; }

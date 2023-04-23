@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230422230130_tablaPagos")]
+    partial class tablaPagos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -353,8 +355,6 @@ namespace proyecto.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdPago");
-
-                    b.HasIndex("IdVenta");
 
                     b.ToTable("Pago");
                 });
@@ -727,17 +727,6 @@ namespace proyecto.Migrations
                     b.Navigation("Producto");
 
                     b.Navigation("VentaCredito");
-                });
-
-            modelBuilder.Entity("proyecto.Models.Pago", b =>
-                {
-                    b.HasOne("proyecto.Models.Venta", "Venta")
-                        .WithMany()
-                        .HasForeignKey("IdVenta")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Venta");
                 });
 
             modelBuilder.Entity("proyecto.Models.Producto", b =>

@@ -1,8 +1,11 @@
 
-create or alter procedure sp_RegistrarCompra(
+create or alter procedure sp_RegistrarVentaCredito(
+@cuotaInicial decimal(18,2),
+@cantidadMeses int,
+@cuotaMensual decimal(18,2),
 @tipoDocumento varchar(50),
 @idUsuario int,
-@idProveedor int,
+@idCliente int,
 @subTotal decimal(10,2),
 @impuestoTotal decimal(10,2),
 @total decimal(10,2),
@@ -13,7 +16,7 @@ as
 begin
 	declare @nrodocgenerado varchar(6)
 	declare @nro int
-	declare @idCompra int
+	declare @idventaCredito int
 
 	declare @tbproductos table (
 	IdProducto int,
@@ -38,16 +41,16 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into Compra(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdProveedor,subTotal,impuestoTotal,total) 
-			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idProveedor,@subTotal,@impuestoTotal,@total)
+			insert into VentaCredito(CuotaInicial, CantidadMeses, CuotaMensual, NumeroDocumento, TipoDocumento, IdUsuario, IdCliente,FechaRegistro,subTotal,impuestoTotal,total) 
+			values (@cuotaInicial, @cantidadMeses, @cuotaMensual, @nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total)
 
 
-			set @idCompra = SCOPE_IDENTITY()
+			set @idventaCredito = SCOPE_IDENTITY()
 
-			insert into DetalleCompras(IdCompra,idProducto,cantidad,precio,total) 
-			select @idCompra,IdProducto,Cantidad,Precio,Total from @tbproductos
+			insert into DetalleVentaCredito(IdVentaCredito,idProducto,cantidad,precio,total) 
+			select @idventaCredito,IdProducto,Cantidad,Precio,Total from @tbproductos
 
-			update p set p.Stock = dv.Cantidad + p.Stock from PRODUCTO p
+			update p set p.Stock = p.Stock - dv.Cantidad from PRODUCTO p
 			inner join @tbproductos dv on dv.IdProducto = p.IdProducto
 
 		COMMIT

@@ -140,15 +140,18 @@ namespace proyecto.Controllers
                 {
                     lista_Compra = await _dbContext.Compra
                         .Include(u => u.Usuario)
-                        .Include(d => d.DetalleCompra)
-                        //.Include(cl => cl.Cliente)
+                        .Include(pr => pr.Proveedor)
+                        .Include(d => d.DetalleCompra)               
                         .ThenInclude(p => p.Producto)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
                         .Select(v => new DtoHistorialCompra()
                         {
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
+                            NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
                             UsuarioRegistro = v.Usuario.Nombre,
+                            NombreProveedor = v.Proveedor.NombreProveedor,
+                            DocumentoProveedor = v.Proveedor.Ruc_Cedula,
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
                             Total = v.Total.ToString(),
@@ -168,15 +171,15 @@ namespace proyecto.Controllers
                         .Include(u => u.Usuario)
                         .Include(d => d.DetalleCompra)
                         .ThenInclude(p => p.Producto)
-                        //.Where(v => v.NumeroDocumento == numeroCompra)
+                        .Where(v => v.NumeroDocumento == numeroCompra)
                         .Select(v => new DtoHistorialCompra()
                         {
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
-                            //NumeroDocumento = v.NumeroDocumento,
+                            NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
-                            //DocumentoCliente = v.DocumentoCliente,
-                            //NombreCliente = v.NombreCliente,
                             UsuarioRegistro = v.Usuario.Nombre,
+                            NombreProveedor = v.Proveedor.NombreProveedor,
+                            DocumentoProveedor = v.Proveedor.Ruc_Cedula,
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
                             Total = v.Total.ToString(),
@@ -216,14 +219,15 @@ namespace proyecto.Controllers
                 lista_Compra = (from v in _dbContext.Compra
                                     join d in _dbContext.DetalleCompras on v.IdCompra equals d.IdCompra
                                     join p in _dbContext.Productos on d.IdProducto equals p.IdProducto
+                                    join pr in _dbContext.Proveedor on v.IdProveedor equals pr.IdProveedor
                                     where v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date
                                     select new DtoReporteCompra()
                                     {
                                         FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
-                                        //NumeroDocumento = v.NumeroDocumento,
+                                        NumeroDocumento = v.NumeroDocumento,
                                         TipoDocumento = v.TipoDocumento,
-                                        //DocumentoCliente = v.DocumentoCliente,
-                                        //NombreCliente = v.NombreCliente,
+                                        DocumentoCliente = pr.Ruc_Cedula,
+                                        NombreCliente = pr.NombreProveedor,
                                         SubTotalCompra = v.SubTotal.ToString(),
                                         ImpuestoTotalCompra = v.ImpuestoTotal.ToString(),
                                         TotalCompra = v.Total.ToString(),
@@ -232,8 +236,6 @@ namespace proyecto.Controllers
                                         Precio = d.Precio.ToString(),
                                         Total = d.Total.ToString()
                                     }).ToList();
-
-
 
                 return StatusCode(StatusCodes.Status200OK, lista_Compra);
             }

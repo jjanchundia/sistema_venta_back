@@ -2,6 +2,9 @@
 {
     public class DtoVenta
     {
+        public decimal CuotaInicial { get; set; }
+        public int CantidadMeses { get; set; }
+        public decimal CuotaMensual { get; set; }
         public string tipoDocumento { get; set; }
         public int idUsuario { get; set; }
         public int IdCliente { get; set; }

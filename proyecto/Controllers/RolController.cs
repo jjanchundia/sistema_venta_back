@@ -31,5 +31,55 @@ namespace proyecto.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("Guardar")]
+        public async Task<IActionResult> Guardar(Rol request)
+        {
+            try
+            {
+                await _dbContext.Rols.AddAsync(request);
+                await _dbContext.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status200OK, "ok");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Editar")]
+        public async Task<IActionResult> Editar([FromBody] Rol request)
+        {
+            try
+            {
+                _dbContext.Rols.Update(request);
+                await _dbContext.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status200OK, "ok");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("Eliminar/{id:int}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            try
+            {
+                Rol Rol = _dbContext.Rols.Find(id);
+                _dbContext.Rols.Remove(Rol);
+                await _dbContext.SaveChangesAsync();
+                return StatusCode(StatusCodes.Status200OK, "ok");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }
