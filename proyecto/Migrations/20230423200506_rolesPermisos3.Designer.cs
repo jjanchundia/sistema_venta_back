@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230423200506_rolesPermisos3")]
+    partial class rolesPermisos3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -516,17 +518,17 @@ namespace proyecto.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRolPermiso"), 1L, 1);
 
-                    b.Property<int?>("IdPermiso")
+                    b.Property<int>("PermisoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdRol")
+                    b.Property<int>("RolId")
                         .HasColumnType("int");
 
                     b.HasKey("IdRolPermiso");
 
-                    b.HasIndex("IdPermiso");
+                    b.HasIndex("PermisoId");
 
-                    b.HasIndex("IdRol");
+                    b.HasIndex("RolId");
 
                     b.ToTable("RolPermiso");
                 });
@@ -819,11 +821,15 @@ namespace proyecto.Migrations
                 {
                     b.HasOne("proyecto.Models.Permiso", "Permiso")
                         .WithMany()
-                        .HasForeignKey("IdPermiso");
+                        .HasForeignKey("PermisoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("proyecto.Models.Rol", "Rol")
                         .WithMany()
-                        .HasForeignKey("IdRol");
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Permiso");
 

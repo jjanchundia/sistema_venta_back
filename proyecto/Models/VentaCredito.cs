@@ -9,6 +9,8 @@ namespace proyecto.Models
         public int IdVentaCredito { get; set; }
         public decimal CuotaInicial { get; set; }
         public int CantidadMeses { get; set; }
+        public int? CuotasPagadas { get; set; }
+        public bool? EsCancelada { get; set; }
         public decimal CuotaMensual { get; set; }
         public string? NumeroDocumento { get; set; }
         public string? TipoDocumento { get; set; }

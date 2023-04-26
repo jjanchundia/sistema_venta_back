@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyecto.Models;
+using proyecto.Models.DTO;
 
 namespace proyecto.Controllers
 {
@@ -31,6 +32,61 @@ namespace proyecto.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("ListaPermisos")]
+        public async Task<IActionResult> ListaPermisos()
+        {
+            List<DtoRolPermiso> lista = new List<DtoRolPermiso>();
+            try
+            {
+                //lista = await _dbContext.Permiso.ToListAsync();
+                lista = (from p in _dbContext.Permiso
+                         select new DtoRolPermiso()
+                         {
+                             IdRol = 0,
+                             IdPermiso = p.IdPermiso,
+                             IdRolPermiso = 0,
+                             Descripcion = p.NombrePermiso,
+                             Checked = false
+                         }).ToList();
+
+                return StatusCode(StatusCodes.Status200OK, lista);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("PermisosPorId/{id:int}")]
+        public async Task<IActionResult> PermisosPorId(int id)
+        {
+            var lista = new List<DtoRolPermiso>();
+            try
+            {
+                lista = (from rp in _dbContext.RolPermiso
+                                    join p in _dbContext.Permiso on rp.IdPermiso equals p.IdPermiso
+                                    //join c in _dbContext.Cliente on v.IdCliente equals c.IdCliente
+                                    where rp.IdRol == id
+                                    select new DtoRolPermiso()
+                                    {
+                                        IdRol = rp.IdRol,
+                                        IdPermiso = p.IdPermiso,
+                                        IdRolPermiso = rp.IdRolPermiso,
+                                        Descripcion = p.NombrePermiso,
+                                        Checked = true
+                                    }).ToList();
+
+
+                return StatusCode(StatusCodes.Status200OK, lista);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+            }
+        }
         [HttpPost]
         [Route("Guardar")]
         public async Task<IActionResult> Guardar(Rol request)
@@ -38,7 +94,7 @@ namespace proyecto.Controllers
             try
             {
                 await _dbContext.Rols.AddAsync(request);
-                await _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status200OK, "ok");
             }
@@ -55,7 +111,7 @@ namespace proyecto.Controllers
             try
             {
                 _dbContext.Rols.Update(request);
-                await _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status200OK, "ok");
             }

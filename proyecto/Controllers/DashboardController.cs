@@ -72,5 +72,26 @@ namespace proyecto.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpGet]
+        [Route("VentasPorMes")]
+        public IActionResult VentasPorMes()
+        {
+            try
+            {
+                var ganancias = _dbContext.Venta.GroupBy(f => new { f.FechaRegistro.Value.Year, f.FechaRegistro.Value.Month })
+                .Select(g => new
+                {
+                    Mes = $"{g.Key.Month}/{g.Key.Year}",
+                    Total = g.Sum(f => f.Total)
+                }).ToList();
+
+                return StatusCode(StatusCodes.Status200OK, ganancias);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

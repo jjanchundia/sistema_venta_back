@@ -37,7 +37,9 @@ namespace proyecto.Controllers
                                {
                                    Cuotas = v.CantidadMeses.ToString(),
                                    ValorInicial = v.CuotaInicial.ToString(),
-                                   IdVenta = v.IdVentaCredito,
+                                   CuotaMensual = v.CuotaMensual.ToString(),
+                                   CuotaPendientes = (v.CantidadMeses - v.CuotasPagadas).ToString(),
+                                   IdVentaCredito = v.IdVentaCredito,
                                    IdCliente = v.IdCliente,
                                    FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                                    NumeroDocumento = v.NumeroDocumento,
@@ -50,7 +52,14 @@ namespace proyecto.Controllers
                                    Producto = p.Descripcion,
                                    Cantidad = d.Cantidad.ToString(),
                                    Precio = d.Precio.ToString(),
-                                   Total = d.Total.ToString()
+                                   Total = d.Total.ToString(),
+                                   Detalle = v.DetalleVentaCredito.Select(d => new DtoDetalleVentaCredito()
+                                   {
+                                       Producto = d.Producto.Descripcion,
+                                       Cantidad = d.Cantidad.ToString(),
+                                       Precio = d.Precio.ToString(),
+                                       Total = d.Total.ToString()
+                                   }).ToList()
                                }).ToList();
 
                 return StatusCode(StatusCodes.Status200OK, lista_venta);
@@ -62,56 +71,73 @@ namespace proyecto.Controllers
         }
 
         [HttpGet]
-        [Route("Productos/{busqueda}")]
-        public async Task<IActionResult> Productos(string busqueda)
+        [Route("ListarPagoId/{id:int}")]
+        public async Task<IActionResult> ListarPagoId(int id)
         {
-            List<DtoProducto> lista = new List<DtoProducto>();
+            List<DtoPago> lista_venta = new List<DtoPago>();
             try
             {
-                lista = await _dbContext.Productos
-                //.Where(p => string.Concat(p.Codigo.ToLower(), p.Marca.ToLower(), p.Descripcion.ToLower()).Contains(busqueda.ToLower()))
-                .Where(p => string.Concat(p.Codigo.ToLower(), p.Descripcion.ToLower()).Contains(busqueda.ToLower()))
-                .Select(p => new DtoProducto()
-                {
-                    IdProducto = p.IdProducto,
-                    Codigo = p.Codigo,
-                    IdMarca = p.IdMarca,
-                    Descripcion = p.Descripcion,
-                    Precio = p.Precio,
-                    Stock = p.Stock
-                }).ToListAsync();
+                lista_venta = (from v in _dbContext.VentaCredito
+                               join c in _dbContext.Cliente on v.IdCliente equals c.IdCliente
+                               join p in _dbContext.Pago on v.IdVentaCredito equals p.IdVentaCredito
+                               where v.IdVentaCredito == id
+                               select new DtoPago()
+                               {
+                                   CuotaPagar = p.CuotaPagar,
+                                   Cuotas = v.CantidadMeses.ToString(),
+                                   ValorInicial = v.CuotaInicial.ToString(),
+                                   CuotaMensual = v.CuotaMensual.ToString(),
+                                   CuotaPendientes = (v.CantidadMeses - v.CuotasPagadas).ToString(),
+                                   IdVentaCredito = v.IdVentaCredito,
+                                   IdCliente = v.IdCliente,
+                                   FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
+                                   NumeroDocumento = v.NumeroDocumento,
+                                   NombreCliente = $"{c.Nombres} {c.Apellidos}",//c.Nombres + ""
+                                   TotalVenta = v.Total.ToString(),
+                                   Detalle = v.DetalleVentaCredito.Select(d => new DtoDetalleVentaCredito()
+                                   {
+                                       Producto = d.Producto.Descripcion,
+                                       Cantidad = d.Cantidad.ToString(),
+                                       Precio = d.Precio.ToString(),
+                                       Total = d.Total.ToString()
+                                   }).ToList()
+                               }).ToList();
 
-
-                return StatusCode(StatusCodes.Status200OK, lista);
+                return StatusCode(StatusCodes.Status200OK, lista_venta);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+                return StatusCode(StatusCodes.Status500InternalServerError, lista_venta);
             }
         }
 
-        [HttpGet]
-        [Route("Clientes/{busqueda}")]
-        public async Task<IActionResult> Clientes(string busqueda)
+    [HttpPost]
+        [Route("Guardar")]
+        public async Task<IActionResult> Guardar(DtoPago request)
         {
-            List<DtoCliente> lista = new List<DtoCliente>();
             try
             {
-                lista = await _dbContext.Cliente
-                .Where(p => string.Concat(p.Cedula, p.Nombres.ToLower(), p.Apellidos.ToLower()).Contains(busqueda.ToLower()))
-                .Select(p => new DtoCliente()
+                await _dbContext.AddAsync(new Pago
                 {
-                    IdCliente = p.IdCliente,
-                    Cedula = p.Cedula,
-                    Nombres = p.Nombres,
-                    Apellidos = p.Apellidos
-                }).ToListAsync();
+                    IdVentaCredito = request.IdVentaCredito,
+                    CuotaPagar = request.CuotaPagar,
+                    ValorPagar = request.ValorPagar,
+                    SaldoPendiente = request.SaldoPendiente,
+                    FechaRegistro = DateTime.Now
+                });
+                await _dbContext.SaveChangesAsync();
 
-                return StatusCode(StatusCodes.Status200OK, lista);
+                //Actualizamos la tabla VentaCredito
+                VentaCredito DtoProductoM = _dbContext.VentaCredito.Find(request.IdVentaCredito);                
+                DtoProductoM.EsCancelada = (DtoProductoM.CantidadMeses - (DtoProductoM.CuotasPagadas + request.CuotaPagar)) == 0 ? true : false;
+                DtoProductoM.CuotasPagadas = (DtoProductoM.CuotasPagadas + request.CuotaPagar);
+                await _dbContext.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status200OK, "ok");
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 

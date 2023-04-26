@@ -32,6 +32,23 @@ namespace proyecto.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("UsuarioPorId/{id:int}")]
+        public async Task<IActionResult> UsuarioPorId(int id)
+        {
+            List<Usuario> lista = new List<Usuario>();
+            try
+            {
+                lista = await _dbContext.Usuarios.Where(x=>x.IdUsuario == id).Include(r => r.IdRolNavigation).OrderByDescending(c => c.IdUsuario).ToListAsync();
+
+                return StatusCode(StatusCodes.Status200OK, lista);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, lista);
+            }
+        }
+
         [HttpPost]
         [Route("Guardar")]
         public async Task<IActionResult> Guardar([FromBody] Usuario request)

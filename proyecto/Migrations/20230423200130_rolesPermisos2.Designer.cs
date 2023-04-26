@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230423200130_rolesPermisos2")]
+    partial class rolesPermisos2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -516,17 +518,25 @@ namespace proyecto.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRolPermiso"), 1L, 1);
 
-                    b.Property<int?>("IdPermiso")
+                    b.Property<string>("PermisoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PermisoIdPermiso")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdRol")
+                    b.Property<string>("RolId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RolIdRol")
                         .HasColumnType("int");
 
                     b.HasKey("IdRolPermiso");
 
-                    b.HasIndex("IdPermiso");
+                    b.HasIndex("PermisoIdPermiso");
 
-                    b.HasIndex("IdRol");
+                    b.HasIndex("RolIdRol");
 
                     b.ToTable("RolPermiso");
                 });
@@ -819,11 +829,11 @@ namespace proyecto.Migrations
                 {
                     b.HasOne("proyecto.Models.Permiso", "Permiso")
                         .WithMany()
-                        .HasForeignKey("IdPermiso");
+                        .HasForeignKey("PermisoIdPermiso");
 
                     b.HasOne("proyecto.Models.Rol", "Rol")
                         .WithMany()
-                        .HasForeignKey("IdRol");
+                        .HasForeignKey("RolIdRol");
 
                     b.Navigation("Permiso");
 

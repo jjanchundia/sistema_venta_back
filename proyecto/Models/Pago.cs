@@ -7,9 +7,12 @@ namespace proyecto.Models
     {
         [Key]
         public int IdPago { get; set; }
-        public decimal SaldoPendiente { get; set; }        
-        public int IdVenta { get; set; }
-        [ForeignKey("IdVenta")]
-        public virtual Venta? Venta { get; set; }
+        public int CuotaPagar { get; set; }
+        public decimal ValorPagar{ get; set; }
+        public decimal SaldoPendiente { get; set; }
+        public DateTime? FechaRegistro { get; set; }
+        public int IdVentaCredito { get; set; }
+        [ForeignKey("IdVentaCredito")]
+        public virtual VentaCredito? VentaCredito { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230423200036_rolesPermisos")]
+    partial class rolesPermisos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -368,27 +370,6 @@ namespace proyecto.Migrations
                     b.ToTable("Pago");
                 });
 
-            modelBuilder.Entity("proyecto.Models.Permiso", b =>
-                {
-                    b.Property<int>("IdPermiso")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPermiso"), 1L, 1);
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NombrePermiso")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("IdPermiso");
-
-                    b.ToTable("Permiso");
-                });
-
             modelBuilder.Entity("proyecto.Models.Producto", b =>
                 {
                     b.Property<int>("IdProducto")
@@ -506,29 +487,6 @@ namespace proyecto.Migrations
                         .HasName("PK__Rol__3C872F76D60D3150");
 
                     b.ToTable("Rol", (string)null);
-                });
-
-            modelBuilder.Entity("proyecto.Models.RolPermiso", b =>
-                {
-                    b.Property<int>("IdRolPermiso")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRolPermiso"), 1L, 1);
-
-                    b.Property<int?>("IdPermiso")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdRol")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdRolPermiso");
-
-                    b.HasIndex("IdPermiso");
-
-                    b.HasIndex("IdRol");
-
-                    b.ToTable("RolPermiso");
                 });
 
             modelBuilder.Entity("proyecto.Models.Usuario", b =>
@@ -813,21 +771,6 @@ namespace proyecto.Migrations
                     b.Navigation("IdCategoriaNavigation");
 
                     b.Navigation("IdMarcaNavigation");
-                });
-
-            modelBuilder.Entity("proyecto.Models.RolPermiso", b =>
-                {
-                    b.HasOne("proyecto.Models.Permiso", "Permiso")
-                        .WithMany()
-                        .HasForeignKey("IdPermiso");
-
-                    b.HasOne("proyecto.Models.Rol", "Rol")
-                        .WithMany()
-                        .HasForeignKey("IdRol");
-
-                    b.Navigation("Permiso");
-
-                    b.Navigation("Rol");
                 });
 
             modelBuilder.Entity("proyecto.Models.Usuario", b =>

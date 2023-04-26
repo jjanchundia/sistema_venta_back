@@ -41,8 +41,8 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into VentaCredito(CuotaInicial, CantidadMeses, CuotaMensual, NumeroDocumento, TipoDocumento, IdUsuario, IdCliente,FechaRegistro,subTotal,impuestoTotal,total) 
-			values (@cuotaInicial, @cantidadMeses, @cuotaMensual, @nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total)
+			insert into VentaCredito(CuotaInicial, CantidadMeses, CuotaMensual, NumeroDocumento, TipoDocumento, IdUsuario, IdCliente,FechaRegistro,subTotal,impuestoTotal,total, CuotasPagadas, EsCancelada) 
+			values (@cuotaInicial, @cantidadMeses, @cuotaMensual, @nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total,0,0)
 
 
 			set @idventaCredito = SCOPE_IDENTITY()
