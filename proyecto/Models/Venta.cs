@@ -22,6 +22,8 @@ namespace proyecto.Models
         public virtual Usuario? IdUsuarioNavigation { get; set; }
         [ForeignKey("IdCliente")]
         public virtual Cliente? Cliente { get; set; }
+        [ForeignKey("IdEmpresa")]
+        public virtual Empresa? Empresa { get; set; }
         public virtual ICollection<DetalleVenta>? DetalleVenta { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyecto.Models;
 
@@ -11,9 +12,10 @@ using proyecto.Models;
 namespace proyecto.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230426205942_tablaEmpresa2")]
+    partial class tablaEmpresa2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,9 +149,6 @@ namespace proyecto.Migrations
                     b.Property<int>("IdCliente")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdEmpresa")
-                        .HasColumnType("int");
-
                     b.Property<int?>("IdUsuario")
                         .HasColumnType("int");
 
@@ -171,8 +170,6 @@ namespace proyecto.Migrations
                     b.HasKey("IdCotizacion");
 
                     b.HasIndex("IdCliente");
-
-                    b.HasIndex("IdEmpresa");
 
                     b.HasIndex("IdUsuario");
 
@@ -331,10 +328,6 @@ namespace proyecto.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RucDocumento")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -776,17 +769,11 @@ namespace proyecto.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("proyecto.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("IdEmpresa");
-
                     b.HasOne("proyecto.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("IdUsuario");
 
                     b.Navigation("Cliente");
-
-                    b.Navigation("Empresa");
 
                     b.Navigation("Usuario");
                 });

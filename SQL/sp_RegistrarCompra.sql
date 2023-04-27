@@ -38,8 +38,8 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into Compra(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdProveedor,subTotal,impuestoTotal,total) 
-			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idProveedor,@subTotal,@impuestoTotal,@total)
+			insert into Compra(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdProveedor,subTotal,impuestoTotal,total,IdEmpresa) 
+			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idProveedor,@subTotal,@impuestoTotal,@total,1)
 
 
 			set @idCompra = SCOPE_IDENTITY()

@@ -38,8 +38,8 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into cotizacion(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdCliente,subTotal,impuestoTotal,total) 
-			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idCliente,@subTotal,@impuestoTotal,@total)
+			insert into cotizacion(numeroDocumento, tipoDocumento,idUsuario,FechaRegistro,IdCliente,subTotal,impuestoTotal,total, IdEmpresa) 
+			values (@nrodocgenerado,@tipoDocumento,@idUsuario,getdate(),@idCliente,@subTotal,@impuestoTotal,@total,1)
 
 
 			set @idCotizacion = SCOPE_IDENTITY()

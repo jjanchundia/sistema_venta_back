@@ -166,6 +166,7 @@ namespace proyecto.Controllers
                 else
                 {
                     lista_Cotizacion = await _dbContext.Cotizacion
+                        .Include(e => e.Empresa)
                         .Include(u => u.Usuario)
                         .Include(d => d.DetalleCotizacion)
                         //.Include(x=>x.Cliente)

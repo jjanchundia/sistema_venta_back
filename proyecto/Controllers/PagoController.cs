@@ -59,6 +59,7 @@ namespace proyecto.Controllers
                                        Cantidad = d.Cantidad.ToString(),
                                        Precio = d.Precio.ToString(),
                                        Total = d.Total.ToString()
+
                                    }).ToList()
                                }).ToList();
 
@@ -93,6 +94,8 @@ namespace proyecto.Controllers
                                    FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                                    NumeroDocumento = v.NumeroDocumento,
                                    NombreCliente = $"{c.Nombres} {c.Apellidos}",//c.Nombres + ""
+                                   SubTotalVenta = v.SubTotal.ToString(),
+                                   ImpuestoTotalVenta = v.ImpuestoTotal.ToString(),
                                    TotalVenta = v.Total.ToString(),
                                    Detalle = v.DetalleVentaCredito.Select(d => new DtoDetalleVentaCredito()
                                    {
@@ -111,7 +114,7 @@ namespace proyecto.Controllers
             }
         }
 
-    [HttpPost]
+        [HttpPost]
         [Route("Guardar")]
         public async Task<IActionResult> Guardar(DtoPago request)
         {

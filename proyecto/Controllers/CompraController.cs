@@ -141,6 +141,7 @@ namespace proyecto.Controllers
                     lista_Compra = await _dbContext.Compra
                         .Include(u => u.Usuario)
                         .Include(pr => pr.Proveedor)
+                        .Include(e => e.Empresa)
                         .Include(d => d.DetalleCompra)               
                         .ThenInclude(p => p.Producto)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)

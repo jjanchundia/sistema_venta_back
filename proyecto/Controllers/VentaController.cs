@@ -139,6 +139,7 @@ namespace proyecto.Controllers
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
                         .Include(c=>c.Cliente)
+                        .Include(e => e.Empresa)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)

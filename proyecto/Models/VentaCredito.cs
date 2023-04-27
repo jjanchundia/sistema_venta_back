@@ -24,7 +24,8 @@ namespace proyecto.Models
         public virtual Usuario? Usuario { get; set; }
         [ForeignKey("IdCliente")]
         public virtual Cliente? Cliente { get; set; }
-        //[ForeignKey("IdDetalleCotizacion")]
+        [ForeignKey("IdEmpresa")]
+        public virtual Empresa? Empresa { get; set; }
         public virtual ICollection<DetalleVentaCredito>? DetalleVentaCredito { get; set; }
     }
 }

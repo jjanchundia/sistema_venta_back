@@ -35,6 +35,7 @@ namespace proyecto.Models
         public virtual DbSet<Pago> Pago { get; set; } = null!;
         public virtual DbSet<Permiso> Permiso { get; set; } = null!;
         public virtual DbSet<RolPermiso> RolPermiso { get; set; } = null!;
+        public virtual DbSet<Empresa> Empresa { get; set; } = null!;
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 

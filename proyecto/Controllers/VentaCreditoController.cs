@@ -139,9 +139,10 @@ namespace proyecto.Controllers
                 if (buscarPor == "fecha")
                 {
                     lista_venta = await _dbContext.Venta
+                        .Include(e => e.Empresa)
                         .Include(u => u.IdUsuarioNavigation)
                         .Include(c => c.Cliente)
-                        .Include(d => d.DetalleVenta)
+                        .Include(d => d.DetalleVenta)                        
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
                         .Select(v => new DtoHistorialVenta()
