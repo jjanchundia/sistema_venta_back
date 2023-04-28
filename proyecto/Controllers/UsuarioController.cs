@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyecto.Models;
+using proyecto.Models.DTO;
 
 namespace proyecto.Controllers
 {
@@ -68,12 +69,16 @@ namespace proyecto.Controllers
 
         [HttpPut]
         [Route("Editar")]
-        public async Task<IActionResult> Editar([FromBody] Usuario request)
+        public async Task<IActionResult> Editar(DtoUsuario request)
         {
             try
             {
-                //request.IdRolNavigation = null;
-                _dbContext.Usuarios.Update(request);
+                Usuario usuarioM = _dbContext.Usuarios.Find(request.IdUsuario);
+                usuarioM.Nombre = request.Nombre;
+                usuarioM.Correo = request.Correo;
+                usuarioM.Telefono = request.Telefono;
+                usuarioM.Clave = request.Clave;
+                _dbContext.Usuarios.Update(usuarioM);
                 await _dbContext.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status200OK, "ok");

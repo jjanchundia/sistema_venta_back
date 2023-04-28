@@ -7,6 +7,10 @@ namespace proyecto.Models
     {
         [Key]
         public int IdVentaCredito { get; set; }
+        public string? TipoVenta { get; set; }
+        public string? NumeroTarjeta { get; set; }
+        public DateTime? FechaCaducidad { get; set; }
+        public string? CodigoSeguridad { get; set; }        
         public decimal CuotaInicial { get; set; }
         public int CantidadMeses { get; set; }
         public int? CuotasPagadas { get; set; }

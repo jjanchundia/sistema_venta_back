@@ -1,5 +1,9 @@
 
 create or alter procedure sp_RegistrarVentaCredito(
+@tipoVenta varchar(100),
+@numeroTarjeta varchar(100),
+@fechaCaducidad datetime = getdate,
+@codigoSeguridad varchar(10),
 @cuotaInicial decimal(18,2),
 @cantidadMeses int,
 @cuotaMensual decimal(18,2),
@@ -41,8 +45,10 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into VentaCredito(CuotaInicial, CantidadMeses, CuotaMensual, NumeroDocumento, TipoDocumento, IdUsuario, IdCliente,FechaRegistro,subTotal,impuestoTotal,total, CuotasPagadas, EsCancelada,IdEmpresa) 
-			values (@cuotaInicial, @cantidadMeses, @cuotaMensual, @nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total,0,0,1)
+			insert into VentaCredito(CuotaInicial, CantidadMeses, CuotaMensual, NumeroDocumento, TipoDocumento, IdUsuario, IdCliente,FechaRegistro,subTotal,impuestoTotal,total, CuotasPagadas, 
+			EsCancelada,IdEmpresa, CodigoSeguridad, FechaCaducidad, NumeroTarjeta, TipoVenta) 
+			values (@cuotaInicial, @cantidadMeses, @cuotaMensual, @nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total,0,
+			0,1, @codigoSeguridad, @fechaCaducidad, @numeroTarjeta, @tipoVenta)
 
 
 			set @idventaCredito = SCOPE_IDENTITY()

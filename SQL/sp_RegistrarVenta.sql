@@ -1,5 +1,9 @@
 
 create or alter procedure sp_RegistrarVenta(
+@tipoVenta varchar(100),
+@numeroTarjeta varchar(100),
+@fechaCaducidad datetime = getdate,
+@codigoSeguridad varchar(10),
 @tipoDocumento varchar(50),
 @idUsuario int,
 @idCliente int,
@@ -38,9 +42,10 @@ begin
 			
 			set @nrodocgenerado =  RIGHT('000000' + convert(varchar(max),@nro),6)
 
-			insert into Venta(numeroDocumento,tipoDocumento,idUsuario,IdCliente,FechaRegistro,subTotal,impuestoTotal,total,IdEmpresa) 
-			values (@nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total,1)
-
+			insert into Venta(numeroDocumento,tipoDocumento,idUsuario,IdCliente,FechaRegistro,subTotal,impuestoTotal,total,IdEmpresa, 
+			CodigoSeguridad, FechaCaducidad, NumeroTarjeta, TipoVenta) 
+			values (@nrodocgenerado,@tipoDocumento,@idUsuario,@idCliente,getdate(),@subTotal,@impuestoTotal,@total,1,
+			@codigoSeguridad, @fechaCaducidad, @numeroTarjeta, @tipoVenta)
 
 			set @idventa = SCOPE_IDENTITY()
 

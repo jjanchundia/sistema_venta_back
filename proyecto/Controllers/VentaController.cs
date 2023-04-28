@@ -94,11 +94,19 @@ namespace proyecto.Controllers
                         ));
                 }
 
+                if (request.FechaCaducidad == null) {
+                    request.FechaCaducidad = DateTime.Now;
+                }
+
                 using (SqlConnection con = new SqlConnection(_dbContext.Database.GetConnectionString()))
                 {
                     con.Open();
                     SqlCommand cmd = new SqlCommand("sp_RegistrarVenta", con);
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("tipoVenta", SqlDbType.VarChar, 100).Value = request.TipoVenta;
+                    cmd.Parameters.Add("numeroTarjeta", SqlDbType.VarChar, 100).Value = request.NumeroTarjeta;
+                    cmd.Parameters.Add("fechaCaducidad", SqlDbType.DateTime, 50).Value = request.FechaCaducidad;
+                    cmd.Parameters.Add("codigoSeguridad", SqlDbType.VarChar, 10).Value = request.CodigoSeguridad;
                     cmd.Parameters.Add("tipoDocumento", SqlDbType.VarChar, 50).Value = request.tipoDocumento;
                     cmd.Parameters.Add("idUsuario", SqlDbType.Int).Value = request.idUsuario;
                     cmd.Parameters.Add("idCliente", SqlDbType.Int).Value = request.IdCliente;
