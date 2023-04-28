@@ -13,5 +13,6 @@ namespace proyecto.Models.DTO
         public string? Impuesto { get; set; }
         public string? Total { get; set; }
         public List<DtoDetalleCompra> Detalle { get; set; }
+        public Empresa? Empresa { get; set; }
     }
 }

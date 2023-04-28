@@ -138,13 +138,22 @@ namespace proyecto.Controllers
                 {
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
-                        .Include(c=>c.Cliente)
+                        .Include(c => c.Cliente)
                         .Include(e => e.Empresa)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
-                        .Select( v=> new DtoHistorialVenta() { 
-                            FechaRegistro =  v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
+                        .Select(v => new DtoHistorialVenta()
+                        {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
+                            FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
                             UsuarioRegistro = v.IdUsuarioNavigation.Nombre,
@@ -153,7 +162,8 @@ namespace proyecto.Controllers
                             SubTotal = v.SubTotal.ToString(),
                             Impuesto = v.ImpuestoTotal.ToString(),
                             Total = v.Total.ToString(),
-                            Detalle = v.DetalleVenta.Select( d => new DtoDetalleVenta() { 
+                            Detalle = v.DetalleVenta.Select(d => new DtoDetalleVenta()
+                            {
                                 Producto = d.IdProductoNavigation.Descripcion,
                                 Cantidad = d.Cantidad.ToString(),
                                 Precio = d.Precio.ToString(),
@@ -166,11 +176,21 @@ namespace proyecto.Controllers
                 {
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
+                        .Include(c => c.Cliente)
+                        .Include(e => e.Empresa)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.NumeroDocumento == numeroVenta)
                         .Select(v => new DtoHistorialVenta()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,

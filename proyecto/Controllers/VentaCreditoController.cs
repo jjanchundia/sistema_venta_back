@@ -147,6 +147,14 @@ namespace proyecto.Controllers
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
                         .Select(v => new DtoHistorialVenta()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
@@ -170,11 +178,21 @@ namespace proyecto.Controllers
                 {
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
+                        .Include(e => e.Empresa)
+                        .Include(c => c.Cliente)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.NumeroDocumento == numeroVenta)
                         .Select(v => new DtoHistorialVenta()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,

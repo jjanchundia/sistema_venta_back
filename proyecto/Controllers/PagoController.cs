@@ -78,12 +78,20 @@ namespace proyecto.Controllers
             List<DtoPago> lista_venta = new List<DtoPago>();
             try
             {
-                lista_venta = (from v in _dbContext.VentaCredito
+                lista_venta = (from v in _dbContext.VentaCredito.Include(x=>x.Empresa)
                                join c in _dbContext.Cliente on v.IdCliente equals c.IdCliente
                                join p in _dbContext.Pago on v.IdVentaCredito equals p.IdVentaCredito
                                where v.IdVentaCredito == id
                                select new DtoPago()
                                {
+                                   Empresa = new Empresa()
+                                   {
+                                       RucDocumento = v.Empresa.RucDocumento,
+                                       Nombre = v.Empresa.Nombre,
+                                       Direccion = v.Empresa.Direccion,
+                                       Telefono = v.Empresa.Telefono,
+                                       Email = v.Empresa.Email,
+                                   },
                                    CuotaPagar = p.CuotaPagar,
                                    Cuotas = v.CantidadMeses.ToString(),
                                    ValorInicial = v.CuotaInicial.ToString(),
@@ -208,12 +216,21 @@ namespace proyecto.Controllers
                 {
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
+                        .Include(x => x.Empresa)
                         .Include(c => c.Cliente)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
                         .Select(v => new DtoHistorialVenta()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
@@ -237,11 +254,21 @@ namespace proyecto.Controllers
                 {
                     lista_venta = await _dbContext.Venta
                         .Include(u => u.IdUsuarioNavigation)
+                        .Include(x => x.Empresa)
+                        .Include(c => c.Cliente)
                         .Include(d => d.DetalleVenta)
                         .ThenInclude(p => p.IdProductoNavigation)
                         .Where(v => v.NumeroDocumento == numeroVenta)
                         .Select(v => new DtoHistorialVenta()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,

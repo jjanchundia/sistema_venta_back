@@ -2,6 +2,7 @@
 {
     public class DtoHistorialCotizacion
     {
+        public int? IdCotizacion { get; set; }
         public string? FechaRegistro { get; set; }
         public string? NumeroDocumento { get; set; }
         public string? TipoDocumento { get; set; }
@@ -13,6 +14,7 @@
         public string? Total { get; set; }
 
         public List<DtoDetalleCotizacion> Detalle { get; set; }
+        public Empresa? Empresa { get; set; }
 
 
     }

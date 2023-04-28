@@ -139,12 +139,22 @@ namespace proyecto.Controllers
                 {
                     lista_Cotizacion = await _dbContext.Cotizacion
                         .Include(u => u.Usuario)
+                        .Include(e => e.Empresa)
                         .Include(cl => cl.Cliente)
                         .Include(d => d.DetalleCotizacion)
                         .ThenInclude(p => p.Producto)
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
                         .Select(v => new DtoHistorialCotizacion()
                         {
+                            IdCotizacion = v.IdCotizacion,
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
@@ -161,19 +171,27 @@ namespace proyecto.Controllers
                                 Precio = d.Precio.ToString(),
                                 Total = d.Total.ToString()
                             }).ToList()
-                        }).ToListAsync();
+                        }).OrderByDescending(x=>x.IdCotizacion).ToListAsync();
                 }
                 else
                 {
                     lista_Cotizacion = await _dbContext.Cotizacion
                         .Include(e => e.Empresa)
+                        .Include(x => x.Cliente)
                         .Include(u => u.Usuario)
-                        .Include(d => d.DetalleCotizacion)
-                        //.Include(x=>x.Cliente)
+                        .Include(d => d.DetalleCotizacion)                        
                         .ThenInclude(p => p.Producto)
                         .Where(v => v.NumeroDocumento == numeroCotizacion)
                         .Select(v => new DtoHistorialCotizacion()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,

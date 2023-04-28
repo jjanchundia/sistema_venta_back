@@ -13,6 +13,7 @@
         public string? Total { get; set; }
 
         public List<DtoDetalleVenta> Detalle { get; set; }
+        public Empresa? Empresa { get; set; }
 
 
     }

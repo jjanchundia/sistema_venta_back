@@ -28,5 +28,6 @@
         public decimal ValorPagar { get; set; }
         public decimal SaldoPendiente { get; set; }
         public List<DtoDetalleVentaCredito>? Detalle { get; set; }
+        public Empresa? Empresa { get; set; }
     }
 }

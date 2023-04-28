@@ -147,6 +147,14 @@ namespace proyecto.Controllers
                         .Where(v => v.FechaRegistro.Value.Date >= _fechainicio.Date && v.FechaRegistro.Value.Date <= _fechafin.Date)
                         .Select(v => new DtoHistorialCompra()
                         {
+                            Empresa = new Empresa()
+                            {
+                                RucDocumento = v.Empresa.RucDocumento,
+                                Nombre = v.Empresa.Nombre,
+                                Direccion = v.Empresa.Direccion,
+                                Telefono = v.Empresa.Telefono,
+                                Email = v.Empresa.Email,
+                            },
                             FechaRegistro = v.FechaRegistro.Value.ToString("dd/MM/yyyy"),
                             NumeroDocumento = v.NumeroDocumento,
                             TipoDocumento = v.TipoDocumento,
@@ -170,6 +178,8 @@ namespace proyecto.Controllers
                 {
                     lista_Compra = await _dbContext.Compra
                         .Include(u => u.Usuario)
+                        .Include(pr => pr.Proveedor)
+                        .Include(e => e.Empresa)
                         .Include(d => d.DetalleCompra)
                         .ThenInclude(p => p.Producto)
                         .Where(v => v.NumeroDocumento == numeroCompra)
